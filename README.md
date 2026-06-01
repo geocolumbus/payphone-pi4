@@ -121,39 +121,72 @@ use the physical Pi header numbering (see `pinout.xyz`).
 ## Software setup
 
 Flash **Raspberry Pi OS Lite (64-bit)** and enable Wi-Fi + SSH during imaging.
-Then:
+Then clone this repo onto the Pi and run the installer:
+
+```bash
+git clone <this-repo> telephone
+cd telephone
+./setup.sh                # prompts for your OpenAI API key
+# or: ./setup.sh sk-...           # pass the key as an argument
+# or: ./setup.sh sk-... 1         # also force the USB ALSA card index
+```
+
+`setup.sh` is **idempotent** (safe to re-run) and does everything:
+
+- installs apt packages (`python3-venv`, `alsa-utils`, `libportaudio2`, …),
+- adds you to the `audio` group,
+- creates the project venv at `./.venv` and installs `requirements.txt`,
+- makes the **USB sound card the default ALSA device** by writing
+  `/etc/asound.conf` (auto-detecting the card; the `plug` layer converts
+  sample rate/format so the mic and speaker just work),
+- stores your key in **`/etc/phone.env`** (root-only, `chmod 600`) — never in
+  git or `~/.bashrc`,
+- installs and enables the **`phone.service`** systemd unit (loads the key via
+  `EnvironmentFile`), so the assistant starts on boot.
+
+If the installer added you to the `audio` group, **reboot** when it tells you
+to. Then verify:
+
+```bash
+arecord -d 3 -f cd /tmp/t.wav && aplay /tmp/t.wav   # tests the DEFAULT device
+systemctl status phone.service                      # should be active (running)
+journalctl -u phone.service -f                      # watch live logs
+# ...then lift the handset and ask a question.
+```
+
+<details>
+<summary><b>Manual setup (fallback, without the installer)</b></summary>
 
 ```bash
 sudo apt update
-sudo apt install -y python3-pip python3-venv alsa-utils
-python3 -m venv ~/phone-env
-source ~/phone-env/bin/activate
-pip install openai sounddevice soundfile gpiozero numpy
+sudo apt install -y python3-pip python3-venv alsa-utils libportaudio2
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+arecord -l      # find the USB capture card index
+aplay -l        # find the USB playback card index
 ```
 
-Check the USB sound card is detected and find its ALSA device index:
+Make the USB card the default device (edit the card number to match):
+copy [`asound.conf`](asound.conf) to `/etc/asound.conf`, replacing `__CARD__`
+with your USB card index.
+
+Store the key where the service can read it (not `~/.bashrc`, which systemd
+won't see):
 
 ```bash
-arecord -l      # capture (microphone) devices
-aplay -l        # playback (speaker) devices
-arecord -d 3 -f cd test.wav && aplay test.wav   # quick mic + speaker test
+echo 'OPENAI_API_KEY=sk-...' | sudo tee /etc/phone.env
+sudo chmod 600 /etc/phone.env
 ```
 
-Put your API key in the environment (do **not** hard-code it):
+Install the service: substitute the paths in [`phone.service`](phone.service)
+(`__USER__`, `__PROJECT_DIR__`, `__VENV_DIR__`), copy it to
+`/etc/systemd/system/phone.service`, then
+`sudo systemctl daemon-reload && sudo systemctl enable --now phone.service`.
 
-```bash
-echo 'export OPENAI_API_KEY="sk-..."' >> ~/.bashrc
-source ~/.bashrc
-```
+For a one-off interactive test you can instead `export OPENAI_API_KEY=sk-...`
+and run `python assistant.py` directly.
 
-Run the assistant:
-
-```bash
-python assistant.py
-```
-
-To start automatically on boot, create a `systemd` service that runs
-`assistant.py` (a template is in the comments at the bottom of that file).
+</details>
 
 ### Two software approaches
 

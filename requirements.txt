@@ -1,0 +1,11 @@
+# Runtime dependencies, installed into the Pi's project venv by setup.sh.
+#
+# NOTE: gpiozero needs the Raspberry Pi GPIO stack and sounddevice needs
+# PortAudio/ALSA, so this file is only installable/usable ON THE PI. The test
+# suite does NOT use this file — it uses requirements-dev.txt and fakes the
+# hardware libraries in conftest.py, so tests run on any machine.
+openai>=1.40
+sounddevice>=0.4
+soundfile>=0.12
+gpiozero>=2.0
+numpy>=1.24

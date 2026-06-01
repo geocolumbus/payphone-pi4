@@ -11,10 +11,16 @@ This is the simple request/response pipeline. For a natural, low-latency,
 interruptible "phone call" feel, swap the transcribe/chat/speak section for
 your provider's realtime speech-to-speech client.
 
-Setup:
-  python3 -m venv ~/phone-env && source ~/phone-env/bin/activate
-  pip install openai sounddevice soundfile gpiozero numpy
-  export OPENAI_API_KEY="sk-..."
+Setup (on the Pi):
+  ./setup.sh            # one-command install — see README "Software setup"
+  # Installs apt deps, creates ./.venv, installs requirements.txt, sets the USB
+  # sound card as the default ALSA device, writes /etc/phone.env (the API key),
+  # and installs + enables the phone.service systemd unit.
+
+Manual run (after setup.sh, for debugging):
+  source .venv/bin/activate
+  export OPENAI_API_KEY="sk-..."     # or rely on /etc/phone.env via systemd
+  python assistant.py
   # find your USB sound card index with: arecord -l  /  aplay -l
 """
 
@@ -225,21 +231,14 @@ if __name__ == "__main__":
 
 
 # ---------------------------------------------------------------------------
-# Run on boot with systemd — save as /etc/systemd/system/phone.service:
+# Run on boot with systemd:
+#   ./setup.sh installs and enables this automatically. The unit template lives
+#   in `phone.service` (in this repo); setup.sh fills in the real user/paths and
+#   writes /etc/systemd/system/phone.service. The OPENAI_API_KEY is loaded from
+#   /etc/phone.env (root-only, chmod 600) via EnvironmentFile, not hard-coded.
 #
-#   [Unit]
-#   Description=Rotary phone LLM assistant
-#   After=network-online.target sound.target
-#   Wants=network-online.target
-#
-#   [Service]
-#   User=pi
-#   Environment=OPENAI_API_KEY=sk-...
-#   ExecStart=/home/pi/phone-env/bin/python /home/pi/telephone/assistant.py
-#   Restart=on-failure
-#
-#   [Install]
-#   WantedBy=multi-user.target
-#
-# Then:  sudo systemctl enable --now phone.service
+#   Useful commands:
+#     systemctl status phone.service
+#     journalctl -u phone.service -f
+#     sudo systemctl restart phone.service
 # ---------------------------------------------------------------------------

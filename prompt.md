@@ -43,10 +43,10 @@ what was built and what deliverables to produce.
 > Produce these deliverables:
 > 1. **`README.md`** — overview, how-it-works, hardware rationale, a wiring
 >    summary table (with Pi physical pin numbers), hardware build steps,
->    software setup (Raspberry Pi OS Lite, Python venv, `arecord`/`aplay`
->    checks, API key via env var), both a simple request/response pipeline and
->    a recommended realtime speech-to-speech approach, cost expectations, and
->    safety notes.
+>    software setup (Raspberry Pi OS Lite + the `setup.sh` installer as the
+>    primary path, with the manual steps kept as a fallback), both a simple
+>    request/response pipeline and a recommended realtime speech-to-speech
+>    approach, cost expectations, and safety notes.
 > 2. **`wiring-diagram.svg`** — a color-coded wiring diagram (boxes for
 >    handset/mic/speaker, USB sound card, PAM8302 amp, Raspberry Pi, hook
 >    switch, optional rotary dial, 5 V supply, and the cloud API) with a legend
@@ -67,8 +67,17 @@ what was built and what deliverables to produce.
 >    with a hard `max_completion_tokens` cap so a reply can never run long, and
 >    add an OpenAI moderation check on both the transcribed question (before the
 >    LLM call) and the generated answer (before speaking), giving a short spoken
->    refusal on a flag; moderation-API errors fail open by default.
-> 5. Replace this prompt file (`prompt.md`) so the project can be replicated
+>    refusal on a flag; moderation-API errors fail open by default. Run as a
+>    real `systemd` service installed by the setup script (deliverable 5),
+>    loading the API key from `/etc/phone.env` via `EnvironmentFile`.
+> 5. **Pi setup automation** — a one-command, idempotent `setup.sh` plus
+>    supporting files: `requirements.txt` (runtime deps), a `phone.service`
+>    systemd unit template, and an `asound.conf` template. The installer runs
+>    the apt installs, creates the project venv, installs deps, adds the user
+>    to the `audio` group, auto-detects the USB sound card and makes it the
+>    default ALSA device (`/etc/asound.conf`), stores the API key in a
+>    root-only `/etc/phone.env`, and installs + enables `phone.service`.
+> 6. Replace this prompt file (`prompt.md`) so the project can be replicated
 >    from the prompt alone.
 
 ---
@@ -80,13 +89,22 @@ what was built and what deliverables to produce.
 - `wiring-diagram.svg` — color-coded wiring diagram; open in any browser.
 - `PARTS.md` — itemized parts list with prices and optional upgrades.
 - `assistant.py` — request/response voice-assistant starter script.
+- `setup.sh` — one-command, idempotent Pi installer.
+- `requirements.txt` — runtime Python deps (Pi-only; tests use the dev file).
+- `phone.service` — systemd unit template (paths filled in by `setup.sh`).
+- `asound.conf` — ALSA template making the USB card the default device.
 - `prompt.md` — this file.
 
 ## Key design decisions to preserve when replicating
 
 - **Hosted API, not local models** — keeps the SBC cheap and the latency/cost
   predictable.
-- **USB sound card is mandatory** — the Pi has no analog mic input.
+- **USB sound card is mandatory** — the Pi has no analog mic input; `setup.sh`
+  makes it the default ALSA device (with a `plug` layer for rate/format
+  conversion) so `assistant.py` needn't pick a device.
+- **One-command, idempotent install** — `setup.sh` derives all paths from its
+  own location; the API key lives only in root-only `/etc/phone.env` (via
+  `EnvironmentFile`), never in git or `~/.bashrc`.
 - **Amp powered from the Pi 5 V rail**, common ground with the Pi; **speaker
   only across OUT+/OUT−** (PAM8302 is bridge-tied).
 - **Hook switch on GPIO17 with software pull-up**; "lifted" starts a turn,

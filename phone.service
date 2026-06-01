@@ -1,0 +1,23 @@
+# systemd unit template for the rotary-phone LLM assistant.
+#
+# This is a TEMPLATE: setup.sh substitutes __USER__, __PROJECT_DIR__, and
+# __VENV_DIR__ for the real install paths and writes the result to
+# /etc/systemd/system/phone.service. The OPENAI_API_KEY is NOT stored here —
+# it lives in /etc/phone.env (root-only, chmod 600) and is loaded via
+# EnvironmentFile so the key stays out of git and out of this world-readable
+# unit file.
+[Unit]
+Description=Rotary phone LLM assistant
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+User=__USER__
+WorkingDirectory=__PROJECT_DIR__
+EnvironmentFile=/etc/phone.env
+ExecStart=__VENV_DIR__/bin/python __PROJECT_DIR__/assistant.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
