@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Audio scratch files
+*.wav
+
+# Secrets — never commit your API key
+.env

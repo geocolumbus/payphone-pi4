@@ -1,0 +1,5 @@
+# Dev/test dependencies. The runtime deps (gpiozero, sounddevice, openai) are
+# faked in conftest.py, so they are NOT needed to run the test suite.
+pytest>=8.0
+numpy>=1.24
+soundfile>=0.12
