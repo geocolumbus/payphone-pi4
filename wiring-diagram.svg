@@ -147,13 +147,13 @@
   <text x="895" y="530" class="sub">over Wi-Fi (HTTPS)</text>
 
   <!-- ===================== LEGEND ===================== -->
-  <rect x="40" y="425" width="320" height="100" rx="8" fill="#fafafa" stroke="#ccc"/>
-  <text x="52" y="448" class="lbl">Legend</text>
-  <line x1="54" y1="468" x2="86" y2="468" class="waudio"/><text x="94" y="472" class="sub">audio signal</text>
-  <line x1="54" y1="492" x2="86" y2="492" class="wpwr"/><text x="94" y="496" class="sub">5 V power</text>
-  <line x1="54" y1="516" x2="86" y2="516" class="wgpio"/><text x="94" y="520" class="sub">GPIO (switch / dial)</text>
-  <line x1="210" y1="468" x2="242" y2="468" class="wdata"/><text x="250" y="472" class="sub">USB / data</text>
-  <line x1="210" y1="492" x2="242" y2="492" class="wnet"/><text x="250" y="496" class="sub">Wi-Fi / HTTPS</text>
+  <rect x="40" y="462" width="320" height="100" rx="8" fill="#fafafa" stroke="#ccc"/>
+  <text x="52" y="485" class="lbl">Legend</text>
+  <line x1="54" y1="505" x2="86" y2="505" class="waudio"/><text x="94" y="509" class="sub">audio signal</text>
+  <line x1="54" y1="529" x2="86" y2="529" class="wpwr"/><text x="94" y="533" class="sub">5 V power</text>
+  <line x1="54" y1="553" x2="86" y2="553" class="wgpio"/><text x="94" y="557" class="sub">GPIO (switch / dial)</text>
+  <line x1="210" y1="505" x2="242" y2="505" class="wdata"/><text x="250" y="509" class="sub">USB / data</text>
+  <line x1="210" y1="529" x2="242" y2="529" class="wnet"/><text x="250" y="533" class="sub">Wi-Fi / HTTPS</text>
 
   <!-- footnote -->
   <text x="40" y="588" class="warn">! Speaker connects only across the amp's OUT+ / OUT- -- never tie either speaker wire to ground (PAM8302 is a bridge-tied / BTL output).</text>
