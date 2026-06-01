@@ -54,9 +54,11 @@ See the full wiring diagram in **[`wiring-diagram.svg`](wiring-diagram.svg)**.
 
 ## Why this hardware
 
-- **Raspberry Pi Zero 2 W** — cheap (~$15), has Wi-Fi, runs full Linux + Python,
-  and has GPIO pins for the hook switch. A Pi 4 works too and is easier to
-  debug, but the Zero 2 W fits neatly inside the phone body.
+- **Raspberry Pi 4** — runs full Linux + Python, has built-in Wi-Fi and the
+  GPIO pins for the hook switch, and full-size USB-A ports so the USB sound
+  card plugs straight in (no adapter). It's easy to debug, and a pay phone has
+  plenty of room for it. (A Pi Zero 2 W is a cheaper, smaller alternative if
+  you don't mind a micro-USB OTG adapter and slower debugging.)
 - **USB sound card** — The Pi has *no microphone input*, so a tiny USB audio
   adapter (CM108-class) adds a mic-in and a headphone-out. Plug-and-play on
   Raspberry Pi OS.
@@ -89,8 +91,8 @@ use the physical Pi header numbering (see `pinout.xyz`).
 | Hook switch leg B | Pi **GND** (pin 9) | |
 | *(optional)* Rotary dial pulse contact A | Pi **GPIO27** (pin 13) | Count pulses to read digits |
 | *(optional)* Rotary dial pulse contact B | Pi **GND** (pin 14) | |
-| USB sound card | Pi **USB** (via OTG adapter on Zero) | |
-| 5 V supply | Pi **USB power** | 2 A or better |
+| USB sound card | Pi **USB-A port** | Plugs in directly (no adapter) |
+| 5 V / 3 A supply | Pi **USB-C power** | Pi 4 wants 5 V / 3 A |
 
 > ⚠️ **Speaker warning:** The PAM8302 is a *bridge-tied-load* (BTL) amp. Connect
 > the speaker only between **OUT+** and **OUT−**. Do **not** tie either speaker
@@ -188,7 +190,7 @@ Pi (`arecord`/`aplay` and a real call).
 
 ## Cost
 
-- **Hardware:** roughly **$55–75** total — see **[`PARTS.md`](PARTS.md)**.
+- **Hardware:** roughly **$85–110** total — see **[`PARTS.md`](PARTS.md)**.
 - **API usage:** pay-as-you-go. A short spoken question + answer (STT + a small
   chat model + TTS) is typically a fraction of a cent to a few cents. Set a
   monthly spending limit in your API provider's dashboard to be safe.

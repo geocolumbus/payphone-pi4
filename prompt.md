@@ -20,8 +20,11 @@ what was built and what deliverables to produce.
 > disconnected. Everything should run on safe 5 V DC.
 >
 > Design the build around these components and explain *why* each is chosen:
-> - **Raspberry Pi Zero 2 W** — cheap, Wi-Fi, GPIO, fits inside the phone
->   (note that a Pi 4 is an easier-to-debug alternative).
+> - **Raspberry Pi 4** — runs full Linux + Python, has built-in Wi-Fi and GPIO,
+>   and has full-size USB-A ports so the USB sound card plugs straight in (no
+>   OTG adapter); it's easy to debug and a pay phone has plenty of room for it.
+>   (A cheaper, smaller Pi Zero 2 W is an alternative if you don't mind a
+>   micro-USB OTG adapter and slower debugging.)
 > - **USB sound card (CM108-class)** — the Pi has no mic input; this adds
 >   mic-in + headphone-out, plug-and-play on Raspberry Pi OS.
 > - **PAM8302A mono amplifier** — boosts the headphone output to drive the
@@ -30,7 +33,7 @@ what was built and what deliverables to produce.
 > - **Electret microphone capsule** (biased by the USB card) and a small
 >   **8 Ω, ~40 mm speaker** in the handset.
 > - **Hook switch → GPIO17 (pin 11) + GND (pin 9)** with an internal pull-up.
-> - **5 V / 2.5 A USB power supply.**
+> - **5 V / 3 A USB-C power supply** (the Pi 4's requirement).
 >
 > Define the full signal chain: hook switch (GPIO) triggers a session →
 > electret mic → USB sound card → Raspberry Pi → speech-to-text → LLM →
@@ -49,9 +52,9 @@ what was built and what deliverables to produce.
 >    switch, optional rotary dial, 5 V supply, and the cloud API) with a legend
 >    distinguishing audio / 5 V power / GPIO / USB / Wi-Fi connections.
 > 3. **`PARTS.md`** — a parts list with purpose, quantity, and rough US prices
->    (~$55–75 total), plus what's reused from the phone, what's not needed, and
->    optional upgrades (Pi 4, I2S mic+amp HAT, MAX9814, push-button, status
->    LED).
+>    (~$85–110 total), plus what's reused from the phone, what's not needed, and
+>    optional upgrades (Pi Zero 2 W to shrink/cheapen, Pi 5, I2S mic+amp HAT,
+>    MAX9814, push-button, status LED).
 > 4. **`assistant.py`** — a runnable Python starter using `gpiozero` for the
 >    hook switch, `sounddevice`/`soundfile` for audio, and the OpenAI SDK for
 >    STT → chat → TTS. It should beep when listening, record while the handset
