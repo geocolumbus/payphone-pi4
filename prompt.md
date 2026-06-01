@@ -21,7 +21,7 @@ what was built and what deliverables to produce.
 >
 > Design the build around these components and explain *why* each is chosen:
 > - **Raspberry Pi Zero 2 W** — cheap, Wi-Fi, GPIO, fits inside the phone
->   (note that a Pi 4/5 is an easier-to-debug alternative).
+>   (note that a Pi 4 is an easier-to-debug alternative).
 > - **USB sound card (CM108-class)** — the Pi has no mic input; this adds
 >   mic-in + headphone-out, plug-and-play on Raspberry Pi OS.
 > - **PAM8302A mono amplifier** — boosts the headphone output to drive the
@@ -50,7 +50,7 @@ what was built and what deliverables to produce.
 >    distinguishing audio / 5 V power / GPIO / USB / Wi-Fi connections.
 > 3. **`PARTS.md`** — a parts list with purpose, quantity, and rough US prices
 >    (~$55–75 total), plus what's reused from the phone, what's not needed, and
->    optional upgrades (Pi 4/5, I2S mic+amp HAT, MAX9814, push-button, status
+>    optional upgrades (Pi 4, I2S mic+amp HAT, MAX9814, push-button, status
 >    LED).
 > 4. **`assistant.py`** — a runnable Python starter using `gpiozero` for the
 >    hook switch, `sounddevice`/`soundfile` for audio, and the OpenAI SDK for

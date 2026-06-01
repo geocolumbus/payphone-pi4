@@ -55,7 +55,7 @@ See the full wiring diagram in **[`wiring-diagram.svg`](wiring-diagram.svg)**.
 ## Why this hardware
 
 - **Raspberry Pi Zero 2 W** — cheap (~$15), has Wi-Fi, runs full Linux + Python,
-  and has GPIO pins for the hook switch. A Pi 4/5 works too and is easier to
+  and has GPIO pins for the hook switch. A Pi 4 works too and is easier to
   debug, but the Zero 2 W fits neatly inside the phone body.
 - **USB sound card** — The Pi has *no microphone input*, so a tiny USB audio
   adapter (CM108-class) adds a mic-in and a headphone-out. Plug-and-play on
