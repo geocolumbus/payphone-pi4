@@ -59,7 +59,12 @@ what was built and what deliverables to produce.
 >    hook switch, `sounddevice`/`soundfile` for audio, and the OpenAI SDK for
 >    STT → chat → TTS. It should beep when listening, record while the handset
 >    is lifted, stop talking if hung up mid-answer, survive API errors without
->    crashing, and include a `systemd` unit (in comments) to run on boot.
+>    crashing, and include a `systemd` unit (in comments) to run on boot. Keep
+>    answers short and listenable — instruct the model (in the system prompt)
+>    to reply in 2-3 short sentences, ≤60 words, offering to explain more for
+>    big topics — and keep them family-friendly / appropriate for all ages (no
+>    profanity, sexual, violent, or other adult content). Back the length limit
+>    with a hard `max_completion_tokens` cap so a reply can never run long.
 > 5. Replace this prompt file (`prompt.md`) so the project can be replicated
 >    from the prompt alone.
 
@@ -84,5 +89,8 @@ what was built and what deliverables to produce.
 - **Hook switch on GPIO17 with software pull-up**; "lifted" starts a turn,
   "hung up" ends it.
 - **Only 5 V DC anywhere** — never touch the legacy line/ringer voltage.
+- **Short, all-ages replies** — system prompt limits answers to 2-3 sentences
+  / ≤60 words and forbids profanity and sexual/violent/adult content, backed by
+  a hard `max_completion_tokens` cap so audio never runs long.
 - Offer a **realtime speech-to-speech** upgrade path for a natural call feel,
   but ship the simple pipeline first.

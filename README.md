@@ -161,6 +161,18 @@ To start automatically on boot, create a `systemd` service that runs
   handset is lifted → send audio to a speech-to-text API → send the text to a
   chat/LLM API → send the reply text to a text-to-speech API → play it. Easiest
   to understand and debug. Latency is a few seconds per turn.
+
+#### Answer length and content
+
+Replies are kept short and family-friendly by the system prompt: **2–3 short
+sentences, ≤60 words** (about 20–30 seconds of speech), and — for big topics —
+the gist plus an offer to explain more. Every reply is also instructed to stay
+**appropriate for all ages** (no profanity, sexual, violent, or other adult
+content). A hard `MAX_ANSWER_TOKENS` cap on the chat call is the backstop so a
+reply can never run away into minutes of audio even if the model ignores the
+prompt. Tune the word/age guidance in `SYSTEM_PROMPT` and the cap via
+`MAX_ANSWER_TOKENS`. For a stronger content guarantee, run replies (or the
+incoming question) through a moderation API and refuse on a flag.
 - **Realtime speech-to-speech (recommended for a natural phone feel):** stream
   audio both ways over a single realtime/voice session for low-latency,
   interruptible conversation. More code, but it feels like a real phone call.

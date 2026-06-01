@@ -39,10 +39,21 @@ STT_MODEL = "whisper-1"
 CHAT_MODEL = "gpt-4o-mini"
 TTS_MODEL = "gpt-4o-mini-tts"
 TTS_VOICE = "alloy"
+# Hard backstop on answer length so a reply can never run away into minutes of
+# speech. ~60 words is roughly 80 tokens; 160 leaves headroom to finish a
+# sentence cleanly while still capping a misbehaving response. The soft limit
+# lives in SYSTEM_PROMPT below; this is the safety net if the model ignores it.
+MAX_ANSWER_TOKENS = 160
 SYSTEM_PROMPT = (
-    "You are a friendly voice on an old rotary pay phone. "
-    "Answer briefly and conversationally — a sentence or two — since the "
-    "caller is listening, not reading."
+    "You are a friendly voice on an old rotary pay phone. The caller hears "
+    "your reply out loud — they can't read it — so keep it short and natural. "
+    "Answer in 2-3 short sentences, no more than 60 words. If the question is "
+    "large or open-ended, give the key point briefly and offer to explain more "
+    "if they'd like. "
+    "Keep every reply family-friendly and appropriate for all ages: no "
+    "profanity and no sexual, violent, or other adult content. If a question "
+    "calls for that kind of content, politely decline in one sentence and offer "
+    "to help with something else."
 )
 
 _client = None
@@ -113,6 +124,7 @@ def transcribe(audio: np.ndarray) -> str:
 def ask_llm(question: str) -> str:
     resp = get_client().chat.completions.create(
         model=CHAT_MODEL,
+        max_completion_tokens=MAX_ANSWER_TOKENS,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": question},
