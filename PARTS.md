@@ -50,7 +50,7 @@ Everything is low-voltage (5 V) and beginner-friendly to solder/wire.
 
 | Part | Why |
 |------|-----|
-| **Raspberry Pi 4 / 5** instead of Zero 2 W | Faster, easier to debug, full-size USB ports (skip the OTG adapter); a bit pricier and bulkier |
+| **Raspberry Pi 4** instead of Zero 2 W | Faster, easier to debug, full-size USB ports (skip the OTG adapter); a bit pricier and bulkier |
 | **I2S mic + I2S amp HAT** (e.g. MEMS mic + MAX98357A) | Higher audio quality, no USB sound card needed; requires device-tree config |
 | **MAX9814 mic module (auto gain)** | More consistent mic levels in a noisy room |
 | **Small push-button** | Manual "push to talk" if you'd rather not trigger on the hook switch |
