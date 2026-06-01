@@ -39,6 +39,10 @@ STT_MODEL = "whisper-1"
 CHAT_MODEL = "gpt-4o-mini"
 TTS_MODEL = "gpt-4o-mini-tts"
 TTS_VOICE = "alloy"
+MODERATION_MODEL = "omni-moderation-latest"
+# Spoken when a question or answer is blocked by moderation (or otherwise
+# refused). Kept short and friendly so it sounds natural over the handset.
+REFUSAL = "Sorry, I can't help with that one. Is there something else I can answer?"
 # Hard backstop on answer length so a reply can never run away into minutes of
 # speech. ~60 words is roughly 80 tokens; 160 leaves headroom to finish a
 # sentence cleanly while still capping a misbehaving response. The soft limit
@@ -121,6 +125,24 @@ def transcribe(audio: np.ndarray) -> str:
     return (resp.text or "").strip()
 
 
+def is_flagged(text: str) -> bool:
+    """Return True if OpenAI moderation flags the text (hate, sexual, violence,
+    self-harm, etc.). This is a stronger guardrail than the system prompt alone.
+
+    On a moderation API error we log and return False (fail-open) so a network
+    blip doesn't brick the phone — the SYSTEM_PROMPT still constrains content.
+    For an all-ages device where you'd rather refuse when unsure, change the
+    `except` branch to `return True` (fail-closed)."""
+    if not text:
+        return False
+    try:
+        result = get_client().moderations.create(model=MODERATION_MODEL, input=text)
+        return bool(result.results[0].flagged)
+    except Exception as exc:
+        print(f"Moderation check failed ({exc}); allowing by default.")
+        return False
+
+
 def ask_llm(question: str) -> str:
     resp = get_client().chat.completions.create(
         model=CHAT_MODEL,
@@ -163,8 +185,16 @@ def handle_call():
         speak("Sorry, I didn't catch that.")
         return
     print(f"Heard: {question!r}")
+    if is_flagged(question):                 # block before spending an LLM call
+        print("Question flagged by moderation — declining.")
+        if handset_lifted():
+            speak(REFUSAL)
+        return
     answer = ask_llm(question)
     print(f"Reply: {answer!r}")
+    if is_flagged(answer):                    # belt-and-suspenders on the reply
+        print("Reply flagged by moderation — declining.")
+        answer = REFUSAL
     if handset_lifted():
         speak(answer)
 

@@ -171,8 +171,15 @@ the gist plus an offer to explain more. Every reply is also instructed to stay
 content). A hard `MAX_ANSWER_TOKENS` cap on the chat call is the backstop so a
 reply can never run away into minutes of audio even if the model ignores the
 prompt. Tune the word/age guidance in `SYSTEM_PROMPT` and the cap via
-`MAX_ANSWER_TOKENS`. For a stronger content guarantee, run replies (or the
-incoming question) through a moderation API and refuse on a flag.
+`MAX_ANSWER_TOKENS`.
+
+On top of the prompt, `assistant.py` runs an **OpenAI moderation check**
+(`is_flagged`) on both the transcribed **question** (before any LLM call) and
+the generated **answer** (before it's spoken). Anything flagged gets a short
+spoken refusal instead. By default a moderation API error *fails open* (allows
+the turn, since the system prompt still constrains content) — flip the `except`
+branch in `is_flagged` to `return True` to *fail closed* for an unsupervised
+all-ages device.
 - **Realtime speech-to-speech (recommended for a natural phone feel):** stream
   audio both ways over a single realtime/voice session for low-latency,
   interruptible conversation. More code, but it feels like a real phone call.

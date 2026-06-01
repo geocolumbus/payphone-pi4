@@ -64,7 +64,10 @@ what was built and what deliverables to produce.
 >    to reply in 2-3 short sentences, ≤60 words, offering to explain more for
 >    big topics — and keep them family-friendly / appropriate for all ages (no
 >    profanity, sexual, violent, or other adult content). Back the length limit
->    with a hard `max_completion_tokens` cap so a reply can never run long.
+>    with a hard `max_completion_tokens` cap so a reply can never run long, and
+>    add an OpenAI moderation check on both the transcribed question (before the
+>    LLM call) and the generated answer (before speaking), giving a short spoken
+>    refusal on a flag; moderation-API errors fail open by default.
 > 5. Replace this prompt file (`prompt.md`) so the project can be replicated
 >    from the prompt alone.
 
@@ -91,6 +94,8 @@ what was built and what deliverables to produce.
 - **Only 5 V DC anywhere** — never touch the legacy line/ringer voltage.
 - **Short, all-ages replies** — system prompt limits answers to 2-3 sentences
   / ≤60 words and forbids profanity and sexual/violent/adult content, backed by
-  a hard `max_completion_tokens` cap so audio never runs long.
+  a hard `max_completion_tokens` cap so audio never runs long, plus an OpenAI
+  moderation check on both the incoming question and the outgoing answer (short
+  spoken refusal on a flag; fails open on a moderation-API error).
 - Offer a **realtime speech-to-speech** upgrade path for a natural call feel,
   but ship the simple pipeline first.

@@ -36,6 +36,42 @@ def test_transcribe_skips_short_audio_without_calling_api():
         get_client.assert_not_called()
 
 
+def _moderation_client(flagged=False, raises=None):
+    fake = MagicMock()
+    if raises is not None:
+        fake.moderations.create.side_effect = raises
+    else:
+        result = MagicMock()
+        result.results = [MagicMock(flagged=flagged)]
+        fake.moderations.create.return_value = result
+    return fake
+
+
+def test_is_flagged_skips_empty_text_without_calling_api():
+    with mock.patch.object(assistant, "get_client") as get_client:
+        assert assistant.is_flagged("") is False
+        get_client.assert_not_called()
+
+
+def test_is_flagged_true_when_moderation_flags():
+    with mock.patch.object(assistant, "get_client",
+                           return_value=_moderation_client(flagged=True)):
+        assert assistant.is_flagged("something bad") is True
+
+
+def test_is_flagged_false_when_moderation_clears():
+    with mock.patch.object(assistant, "get_client",
+                           return_value=_moderation_client(flagged=False)):
+        assert assistant.is_flagged("what time is it in Tokyo?") is False
+
+
+def test_is_flagged_fails_open_on_api_error():
+    # A moderation outage must not brick the phone -> default to allowing.
+    with mock.patch.object(assistant, "get_client",
+                           return_value=_moderation_client(raises=RuntimeError("down"))):
+        assert assistant.is_flagged("anything") is False
+
+
 def test_transcribe_packs_valid_wav_and_returns_text():
     # transcribe() should hand the API a valid 16 kHz mono WAV that decodes
     # back to the same sample count, and return the stripped transcript.
